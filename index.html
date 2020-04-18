@@ -65,15 +65,11 @@
             </div>
             <div class="card-body mh-100 overflow-auto">
                 <div class="container mw-100">
-                    <div class="row mb-1">
+                    <div class="row mb-1" x-data="{ weekdays: [ 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag' ] }">
                         <div class="col-1 text-left border-bottom"></div>
-                        <div class="col text-center border-bottom"><h6>Montag</h6></div>
-                        <div class="col text-center border-bottom"><h6>Dienstag</h6></div>
-                        <div class="col text-center border-bottom"><h6>Mittwoch</h6></div>
-                        <div class="col text-center border-bottom"><h6>Donnerstag</h6></div>
-                        <div class="col text-center border-bottom"><h6>Freitag</h6></div>
-                        <div class="col text-center border-bottom"><h6>Samstag</h6></div>
-                        <div class="col text-center border-bottom"><h6>Sonntag</h6></div>
+                        <template x-for="day in weekdays" :key="day">
+                            <div class="col text-center border-bottom"><h6 x-text="day"></h6></div>
+                        </template>
                     </div>
                     <template id="calEvent">
                             <div class="cal-event card border-dark rounded-0">
@@ -84,70 +80,28 @@
                                 </ul>
                             </div>
                     </template>
-                    <div class="row cal-root">
-                        <div class="col-1 cal-weekday" style="height: 480px;">
-                            <span class="cal-event" style="height: 20px; top: 0px">00:00</span>
-                            <span class="cal-event" style="height: 20px; top: 40px">02:00</span>
-                            <span class="cal-event" style="height: 20px; top: 80px">04:00</span>
-                            <span class="cal-event" style="height: 20px; top: 120px">06:00</span>
-                            <span class="cal-event" style="height: 20px; top: 160px">08:00</span>
-                            <span class="cal-event" style="height: 20px; top: 200px">10:00</span>
-                            <span class="cal-event" style="height: 20px; top: 240px">12:00</span>
-                            <span class="cal-event" style="height: 20px; top: 280px">14:00</span>
-                            <span class="cal-event" style="height: 20px; top: 320px">16:00</span>
-                            <span class="cal-event" style="height: 20px; top: 360px">18:00</span>
-                            <span class="cal-event" style="height: 20px; top: 400px">20:00</span>
-                            <span class="cal-event" style="height: 20px; top: 440px">22:00</span>
+                    <div class="row cal-root" x-data="Calendar.component()" @store:changed.document="update()">
+                        <div class="col-1 cal-weekday" :style="`height: ${hours.length * scale}px;`">
+                            <template x-for="(hour, index) in hours" :key="hour">
+                                <span class="cal-event" :style="`height: ${scale}px; top: ${index * scale}px`" x-text="`${hour}:00`"></span>
+                            </template>
                         </div>
-                        <div class="col cal-weekday">
-                            <div class="cal-event card" style="height: 120px; top: 120px">
-                                <div class="card-body py-1">
-                                    <span class="card-title">06:00 - 12:00</span>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item py-1">Hans</li>
-                                    <li class="list-group-item py-1">Peter</li>
-                                    <li class="list-group-item py-1">Karl</li>
-                                </ul>
-                            </div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 420px">&nbsp;</div>
-                        </div>
-                        <div class="col cal-weekday">
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 20px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 120px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 100px; top: 240px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 80px; top: 400px">&nbsp;</div>
-                        </div>
-                        <div class="col cal-weekday">
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 0px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 100px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 230px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 420px">&nbsp;</div>
-                        </div>
-                        <div class="col cal-weekday">
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 20px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 120px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 100px; top: 240px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 80px; top: 400px">&nbsp;</div>
-                        </div>
-                        <div class="col cal-weekday">
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 0px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 100px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 230px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 420px">&nbsp;</div>
-                        </div>
-                        <div class="col cal-weekday">
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 20px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 120px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 100px; top: 240px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 80px; top: 400px">&nbsp;</div>
-                        </div>
-                        <div class="col cal-weekday">
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 0px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 100px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 230px">&nbsp;</div>
-                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 420px">&nbsp;</div>
-                        </div>
+                        <template x-for="(day, index) in shifts" :key="index">
+                           <div class="col cal-weekday">
+                                <template x-for="(shift, id) in day" :key="id">
+                                    <div :class="{ 'cal-event': true, 'card': true, 'border-warning': shift.workers.length != shift.neededWorkers }" :style="`height: ${shift.duration * scale}px; top: ${(shift.start.getHours() + shift.start.getMinutes()/60 - hours[0]) * scale}px`">
+                                        <div class="card-body py-1">
+                                            <span class="card-title" x-text="shift.start.toLocaleString()"></span>
+                                        </div>
+                                        <ul class="list-group list-group-flush">
+                                            <template x-for="worker in shift.workers" :key="worker">
+                                                <li class="list-group-item py-1" x-text="worker.name"></li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </template>
+                           </div> 
+                        </template>
                     </div>
                 </div>
             </div>
@@ -382,6 +336,8 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script type="module">
+        import 'https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js'
+
         import store from "./components/store.mjs";
         import toast from "./components/toast.mjs";
         import title from "./components/title.mjs";
@@ -390,10 +346,13 @@
         import confirmDelete from "./components/confirm-delete.mjs";
         import spinner from "./components/spinner.mjs";
         import scheduleButton from "./components/schedule-button.mjs";
-        import calendar from "./components/calendar.mjs";
+        import * as Calendar from "./components/calendar.mjs";
         import { eventTrap } from "./lib/util.mjs"
 
         const TAG = "[main]";
+
+        // make the imports visible in the global scope for Alpine
+        window.Calendar = Calendar;
 
         $(() => {
             eventTrap('start');
@@ -408,7 +367,6 @@
                 shift,
                 spinner,
                 scheduleButton,
-                calendar,
                 confirmDelete
             ].map(module => new Promise(resolve => { module.call(); resolve(); }));
 

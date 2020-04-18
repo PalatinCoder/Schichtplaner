@@ -2,61 +2,21 @@ import { shifts } from "./store.mjs";
 
 const TAG = "[calendar]";
 
-let $this, template;
-
 /**
- * Initialize the component
- */
-const init = () => {
-    $this = $('.cal-root');
-    template = $('template#calEvent');
-
-    $(document).on('store:changed', render);
-
-
-    console.log(TAG, 'component loaded');
-}
-export default init;
-
-/**
- * Render a weekly calendar view
+ * Alpine.js component
  * //TODO filter by calendar week
  */
-const render = () => {
-    console.log(TAG, 'render');
-
-    let hours = getHourBounds(shifts);
-    let scale = calculateScale(shifts);
-    let shiftsByDay = shifts.groupBy(s => (s.start.getDay()+6)%7, { initial: [ [],[],[],[],[],[],[] ] });
-    
-    $this.empty();
-    let $hourScale = $(document.createElement('div'))
-        .addClass('col-1')
-        .addClass('cal-weekday')
-        .css({ height: hours.length * scale})
-        .append(hours.map(
-            (h,i) => $(document.createElement('span')).addClass('cal-event').css({height: scale, top: i * scale}).text(`${h}:00`)
-        ))
-
-    let $shifts = $(document.createDocumentFragment()).append(
-    shiftsByDay.reduce((days, day) => `${days}
-        <div class="col cal-weekday">
-            ${day.reduce((shifts, shift) => `${shifts}
-            <div class="cal-event card ${shift.workers.length != shift.neededWorkers ? 'border-warning' : ''}" style="height: ${shift.duration * scale}px; top: ${(shift.start.getHours() + shift.start.getMinutes()/60 - hours[0])*scale}px">
-                    <div class="card-body py-1">
-                        <span class="card-title">${shift.start.toLocaleString()}</span>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        ${shift.workers.reduce((workers, worker) => `${workers}
-                        <li class="list-group-item py-1">${worker.name}</li>
-                        `,'')}
-                    </ul>
-                </div>
-            `,'')}
-        </div>
-    `, ''));
-    
-    $this.append($hourScale, $shifts);
+export function component() {
+    return {
+        shifts: shifts.groupBy(s => (s.start.getDay()+6)%7, { initial: [ [],[],[],[],[],[],[] ]}), // hold seven empty days, to be filled by Array.groupBy
+        hours: getHourBounds(shifts),
+        scale: calculateScale(shifts),
+        update: function() { 
+            this.shifts = [...shifts.groupBy(s => (s.start.getDay()+6)%7, { initial: [ [],[],[],[],[],[],[] ] })]; // return a new array to trigger alpine's reactivity
+            this.hours = getHourBounds(shifts);
+            this.scale = calculateScale(shifts);
+        }
+    }
 }
 
 /**

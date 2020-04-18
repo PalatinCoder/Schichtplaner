@@ -49,7 +49,7 @@ const reschedule = async () => {
     schedule(shifts, workers)
         .then(() => $(document).trigger('schedule:finished', { successful: true}))
         .catch((r) => $(document).trigger('schedule:finished', { successful: false, missing: r}))
-        .finally(() => $(document).trigger('store:changed'))
+        .finally(() => document.dispatchEvent(new Event('store:changed')))
 }
 
 /**
