@@ -5,6 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "name": "Launch Application",
+            "clearConsoleOnReload": true,
+            "reloadOnChange": {
+                "watch": ["${workspaceFolder}/*.html", "${workspaceFolder}/**/*.mjs"],
+                "ignore": "**/node_modules/**"
+            },
+            "reloadOnAttach": true,
+            "file": "${workspaceFolder}/index.html"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Run Program",
