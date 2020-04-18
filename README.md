@@ -1,0 +1,3 @@
+# Schichtplaner
+
+Automatisch Schichtpläne generieren

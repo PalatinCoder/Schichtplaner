@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Schichtplaner</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/354cc1493f.js" crossorigin="anonymous"></script>
+    <style type="text/css">
+        .cal-root { font-size: .75rem; }
+        .cal-weekday { position: relative; }
+        .cal-event { position: absolute; left: 0.25rem; right: 0.25rem; }
+    </style>
+    <style type="text/css" media="screen">
+        body { position: relative; padding-top: 4rem; }
+        nav.navbar { min-height: 4rem; }
+        div.toaster { position: fixed; bottom: 1rem; right: 1rem; width: 350px; z-index: 1500 }
+    </style>
+</head>
+<body data-spy="scroll" data-target="#navbar">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" id="navbar">
+        <input type="text" readonly class="w-auto form-control-plaintext navbar-brand py-0 px-1 rounded" value="Schichtplaner">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarInner"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarInner">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a href="#calendar" class="nav-link">Wochenansicht</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#shifts" class="nav-link">Schichten</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#workers" class="nav-link">Arbeiter</a>
+                </li>
+            </ul>
+
+            <div class="btn-group my-2 my-sm-0 mr-3">
+                <button class="btn btn-secondary" onclick="window.print()"><i class="fas fa-print"></i></button>
+                <button disabled class="btn btn-secondary"><i class="fas fa-file-import"></i></button>
+                <button disabled class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"><i class="fas fa-file-export"></i></button>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item">Schichtplan (gesamt)</a>
+                    <a href="#" class="dropdown-item">Stammdaten</a>
+                </div>
+            </div>
+            <button id="scheduleButton" class="btn btn-primary my-2 my-sm-0" disabled data-toggle="tooltip" data-container="body" title="Keine Änderungen!">Neu generieren</button>
+        </div>
+    </nav>
+
+    <main>
+        <h2 class="d-none d-print-block px-4">Test</h2>
+
+        <section id="calendar" class="card mh-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4>Wochenansicht</h4>
+                <nav class="d-print-none">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled"><a href="#" class="page-link"><i class="fas fa-chevron-left"></i></a></li>
+                        <li class="page-item disabled"><a href="#" class="page-link"><i class="fas fa-chevron-right"></i></a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="card-body mh-100 overflow-auto">
+                <div class="container mw-100">
+                    <div class="row mb-1">
+                        <div class="col-1 text-left border-bottom"></div>
+                        <div class="col text-center border-bottom"><h6>Montag</h6></div>
+                        <div class="col text-center border-bottom"><h6>Dienstag</h6></div>
+                        <div class="col text-center border-bottom"><h6>Mittwoch</h6></div>
+                        <div class="col text-center border-bottom"><h6>Donnerstag</h6></div>
+                        <div class="col text-center border-bottom"><h6>Freitag</h6></div>
+                        <div class="col text-center border-bottom"><h6>Samstag</h6></div>
+                        <div class="col text-center border-bottom"><h6>Sonntag</h6></div>
+                    </div>
+                    <template id="calEvent">
+                            <div class="cal-event card border-dark rounded-0">
+                                <div class="card-body py-1">
+                                    <span class="card-title">xx:xx</span>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                </ul>
+                            </div>
+                    </template>
+                    <div class="row cal-root">
+                        <div class="col-1 cal-weekday" style="height: 480px;">
+                            <span class="cal-event" style="height: 20px; top: 0px">00:00</span>
+                            <span class="cal-event" style="height: 20px; top: 40px">02:00</span>
+                            <span class="cal-event" style="height: 20px; top: 80px">04:00</span>
+                            <span class="cal-event" style="height: 20px; top: 120px">06:00</span>
+                            <span class="cal-event" style="height: 20px; top: 160px">08:00</span>
+                            <span class="cal-event" style="height: 20px; top: 200px">10:00</span>
+                            <span class="cal-event" style="height: 20px; top: 240px">12:00</span>
+                            <span class="cal-event" style="height: 20px; top: 280px">14:00</span>
+                            <span class="cal-event" style="height: 20px; top: 320px">16:00</span>
+                            <span class="cal-event" style="height: 20px; top: 360px">18:00</span>
+                            <span class="cal-event" style="height: 20px; top: 400px">20:00</span>
+                            <span class="cal-event" style="height: 20px; top: 440px">22:00</span>
+                        </div>
+                        <div class="col cal-weekday">
+                            <div class="cal-event card" style="height: 120px; top: 120px">
+                                <div class="card-body py-1">
+                                    <span class="card-title">06:00 - 12:00</span>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item py-1">Hans</li>
+                                    <li class="list-group-item py-1">Peter</li>
+                                    <li class="list-group-item py-1">Karl</li>
+                                </ul>
+                            </div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 420px">&nbsp;</div>
+                        </div>
+                        <div class="col cal-weekday">
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 20px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 120px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 100px; top: 240px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 80px; top: 400px">&nbsp;</div>
+                        </div>
+                        <div class="col cal-weekday">
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 0px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 100px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 230px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 420px">&nbsp;</div>
+                        </div>
+                        <div class="col cal-weekday">
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 20px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 120px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 100px; top: 240px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 80px; top: 400px">&nbsp;</div>
+                        </div>
+                        <div class="col cal-weekday">
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 0px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 100px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 230px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 420px">&nbsp;</div>
+                        </div>
+                        <div class="col cal-weekday">
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 20px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 120px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 100px; top: 240px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 80px; top: 400px">&nbsp;</div>
+                        </div>
+                        <div class="col cal-weekday">
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 0px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 100px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 230px">&nbsp;</div>
+                            <div class="border border-secondary rounded cal-event" style="height: 60px; top: 420px">&nbsp;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="shifts" class="card d-print-none">
+            <h4 class="card-header">Schichten</h4>
+            <div class="card-body">
+                <table class="table table-responsive-md table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Zeit</th>
+                            <th>Dauer <small class="text-muted">in Stunden</small></th>
+                            <th>Personen <small class="text-muted">benötigt</small></th>
+                            <th>Personen <small class="text-muted">eingeteilt</small></th>
+                            <th class="text-right">
+                                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#formShift"><i class="fas fa-plus"></i></button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <template>
+                        <tr>
+
+                            <th data-model="id" scope="row">i</th>
+                            <td data-model="start">1.1.1970, 00:00</td>
+                            <td data-model="duration">n</td>
+                            <td data-model="neededWorkers">n</td>
+                            <td data-model="scheduledWorkers">n</td>
+                            <td class="text-right">
+                                <div class="btn-group" data-toggle="tooltip" title="Eingeteilte Arbeiter">
+                                    <button class="btn btn-sm btn-outline-secondary" data-id="i" data-toggle="modal" data-target="#shiftWorkers"><i class="fas fa-users"></i></button>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-secondary" data-id="i" data-toggle="modal" data-target="#formShift"><i class="fas fa-pen"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="i" data-entity="shift id" data-toggle="modal" data-target="#confirmDelete"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="workers" class="card d-print-none">
+            <h4 class="card-header">Arbeiter</h4>
+            <div class="card-body">
+                <table class="table table-responsive-md table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Schichten <small class="text-muted">eingeteilt</small></th>
+                            <th class="text-right">
+                                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#formWorker"><i class="fas fa-plus"></i></button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <template>
+                        <tr>
+                            <th data-model="id" scope="row">i</th>
+                            <td data-model="name">name</td>
+                            <td data-model="workedShifts">s</td>
+                            <td class="text-right">
+                                <div class="btn-group" data-toggle="tooltip" title="Schichten des Arbeiters">
+                                    <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#workerWorkedShifts" data-id="i"><i class="fas fa-calendar"></i></button>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#formWorker" data-id="i"><i class="fas fa-pen"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger" data-action="delete" data-toggle="modal" data-target="#confirmDelete" data-id="i" data-entity="worker name"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <aside>
+        <div class="modal fade" tabindex="-1" data-backdrop="static" id="confirmDelete">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Warnung</h5>
+                        <button class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="render">
+                        <div class="modal-body">
+                            <p>Sicher, dass <span data-model="entity">PLATZHALTER</span> gelöscht werden soll?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                            <button class="btn btn-danger" data-dismiss="modal">Löschen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" tabindex="-1" id="formShift">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Schicht</h5>
+                        <button class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <form class="needs-validation" novalidate>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="shiftCopy">Bestehende Schicht kopieren</label>
+                                <select name="shiftCopy" id="shiftCopy" class="form-control custom-select">
+                                </select>
+                            </div>
+                            <hr class="mx-n3">
+                            <div class="form-group">
+                                <label for="shiftStart">Start</label>
+                                <div class="input-group">
+                                    <input type="date" name="date" id="shiftStartDate" class="form-control" required>
+                                    <input type="time" name="time" id="shiftStartTime" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="shiftDuration">Dauer</label>
+                                <div class="input-group">
+                                    <input class="form-control" name="duration" type="number" min="0.5" max="12" step="0.5" value="0.5" id="shiftDuration" required>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">h</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="shiftNeededWorkers">Personen</label>
+                                <input type="number" name="neededWorkers" min="1" value="1" id="shiftNeededWorkers" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" name="id" value="">
+                            <button class="btn btn-secondary" type="reset" data-dismiss="modal">Abbrechen</button>
+                            <button class="btn btn-primary" type="submit">Speichern</input>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" tabindex="-1" id="formWorker">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Arbeiter</h5>
+                        <button class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <form class="needs-validation" novalidate>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="workerName">Name</label>
+                                <input class="form-control" type="text" id="workerName" name="name" required placeholder="Name">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" name="id" value="">
+                            <button class="btn btn-secondary" type="reset" data-dismiss="modal">Abbrechen</button>
+                            <button class="btn btn-primary" type="submit">Speichern</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" tabindex="-1" id="spinner" data-backdrop="static">
+            <div class="modal-dialog modal-sm modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header d-flex justify-content-center">
+                        <h5 class="modal-title">Bitte warten</h5>
+                    </div>
+                    <div class="modal-body d-flex justify-content-center">
+                        <div class="spinner-border"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="shiftWorkers">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Details</h5>
+                        <button class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group list-group-flush">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="workerWorkedShifts">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Schichten von <span class="name"></span></h5>
+                        <button class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group list-group-flush"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toaster">
+            <div class="toast hide" data-delay="5000">
+                <div class="toast-header">
+                    <i class="fas mr-1"></i>
+                    <strong class="mr-auto"></strong>
+                    <button class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+                </div>
+                <div class="toast-body">
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script type="module">
+        import store from "./components/store.mjs";
+        import toast from "./components/toast.mjs";
+        import title from "./components/title.mjs";
+        import worker from "./components/worker.mjs";
+        import shift from "./components/shift.mjs";
+        import confirmDelete from "./components/confirm-delete.mjs";
+        import spinner from "./components/spinner.mjs";
+        import scheduleButton from "./components/schedule-button.mjs";
+        import calendar from "./components/calendar.mjs";
+        import { eventTrap } from "./lib/util.mjs"
+
+        const TAG = "[main]";
+
+        $(() => {
+            eventTrap('start');
+
+            // map all modules' init to promises calling them
+            let modulesLoaded = 
+            [
+                store,
+                toast,
+                title,
+                worker,
+                shift,
+                spinner,
+                scheduleButton,
+                calendar,
+                confirmDelete
+            ].map(module => new Promise(resolve => { module.call(); resolve(); }));
+
+            // trigger event when all modules are loaded
+            Promise.all(modulesLoaded).then(() => {
+                console.log(TAG, 'all modules loaded');
+                $(document).trigger('main:loaded');
+            });
+
+            // init bootstrap tooltips (that one line of code doesn't get it's one module)
+            $(document).tooltip({ selector: '[data-toggle="tooltip"]'});
+        });
+
+        // TODO: Prevent page from being closed
+    </script>
+</body>
+</html>
