@@ -19,7 +19,7 @@ const init = () => {
     console.log(TAG, 'component loaded');
 
     // trigger change event to init the view after all modules are loaded
-    $(document).on('main:loaded', () => $(document).trigger('store:changed'))
+    $(document).on('main:loaded', () => document.dispatchEvent(new Event('store:changed')))
 
     // fire stage 2 of a delete when the confirmation comes in
     $(document).on('delete:confirmed', stage2Delete);
@@ -66,7 +66,7 @@ let pendingDeleteOperation;
 const stage2Delete = event => {
     console.log(TAG, 'processing delete operation');
     pendingDeleteOperation.call();
-    $(document).trigger('store:changed');
+    document.dispatchEvent(new Event('store:changed'))
 }
 
 /**
@@ -85,7 +85,7 @@ const saveWorker = (event, data) => {
         workers[id].name = data.get('name');
     }
 
-    $(document).trigger('store:changed')
+    document.dispatchEvent(new Event('store:changed'))
 }
 
 /**
@@ -115,7 +115,6 @@ const saveShift = (event, data) => {
         shifts[id] = s
     }
 
-    //$(document).trigger('store:changed');
     document.dispatchEvent(new Event('store:changed'))
 }
 
