@@ -2,20 +2,24 @@ import { shifts } from "./store.mjs";
 
 const TAG = "[calendar]";
 
+const dayOfWeek = s => (s.start.getDay()+6)%7;
+const newEmptyWeek = () => [ [],[],[],[],[],[],[] ]; // create a new array of seven arrays, for seven days in a week
+
 /**
- * Alpine.js component
+ * Init Alpine.js component with its properties and an update function
  * //TODO filter by calendar week
  */
 export function component() {
     return {
-        shifts: shifts.groupBy(s => (s.start.getDay()+6)%7, { initial: [ [],[],[],[],[],[],[] ]}), // hold seven empty days, to be filled by Array.groupBy
-        hours: getHourBounds(shifts),
-        scale: calculateScale(shifts),
+        shifts: [],
+        hours: [],
+        scale: 0,
         update: function() { 
-            this.shifts = [...shifts.groupBy(s => (s.start.getDay()+6)%7, { initial: [ [],[],[],[],[],[],[] ] })]; // return a new array to trigger alpine's reactivity
+            console.log(TAG, 'render');
+            this.shifts = shifts.groupBy(dayOfWeek, { initial: newEmptyWeek() });
             this.hours = getHourBounds(shifts);
             this.scale = calculateScale(shifts);
-        }
+        } 
     }
 }
 
