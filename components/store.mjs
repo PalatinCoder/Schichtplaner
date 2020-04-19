@@ -11,9 +11,7 @@ const TAG = "[store]";
 export var workers = [ new worker('Hans') ];
 export var shifts = [ new shift(new Date(), 1, 2) ];
 
-const storeChanged = () => {
-    return new CustomEvent('store:changed', { detail: { shifts: shifts, workers: workers }})
-};
+const storeChanged = () => new CustomEvent('store:changed', { detail: { shifts: shifts, workers: workers }})
 
 /**
  * Init callback
