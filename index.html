@@ -53,13 +53,16 @@
     <main>
         <h2 class="d-none d-print-block px-4">Test</h2>
 
-        <section id="calendar" class="card mh-100">
+        <section id="calendar" class="card mh-100" x-data="Calendar.component()" @store:changed.document="_shifts = [...$event.detail.shifts]">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4>Wochenansicht</h4>
+                <h4>Wochenansicht <span x-text="`KW ${currentWeek}`"></span></h4>
                 <nav class="d-print-none">
                     <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a href="#" class="page-link"><i class="fas fa-chevron-left"></i></a></li>
-                        <li class="page-item disabled"><a href="#" class="page-link"><i class="fas fa-chevron-right"></i></a></li>
+                        <li :class="{ 'page-item': true, 'disabled': currentWeek == weeks[0] }"><a href="#" class="page-link" @click="currentWeek--"><i class="fas fa-chevron-left"></i></a></li>
+                        <template x-for="week in weeks" :key="week">
+                            <li :class="{ 'page-item': true, 'active': week == currentWeek }"><a href="#" class="page-link" x-text="week"></a></li>
+                        </template>
+                        <li :class="{ 'page-item': true, 'disabled': currentWeek == weeks.slice(-1)[0] }"><a href="#" class="page-link" @click="currentWeek++"><i class="fas fa-chevron-right"></i></a></li>
                     </ul>
                 </nav>
             </div>
@@ -80,13 +83,13 @@
                                 </ul>
                             </div>
                     </template>
-                    <div class="row cal-root" x-data="Calendar.component()" @store:changed.document="update()">
+                    <div class="row cal-root">
                         <div class="col-1 cal-weekday" :style="`height: ${hours.length * scale}px;`">
                             <template x-for="(hour, index) in hours" :key="hour">
                                 <span class="cal-event" :style="`height: ${scale}px; top: ${index * scale}px`" x-text="`${hour}:00`"></span>
                             </template>
                         </div>
-                        <template x-for="(day, index) in shifts" :key="index">
+                        <template x-for="(day, index) in groupedShifts" :key="index">
                            <div class="col cal-weekday">
                                 <template x-for="(shift, id) in day" :key="id">
                                     <div :class="{ 'cal-event': true, 'card': true, 'border-warning': shift.workers.length != shift.neededWorkers }" :style="`height: ${shift.duration * scale}px; top: ${(shift.start.getHours() + shift.start.getMinutes()/60 - hours[0]) * scale}px`">
