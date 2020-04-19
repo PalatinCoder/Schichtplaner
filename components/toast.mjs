@@ -16,9 +16,9 @@ const init = () => {
 
     $this.toast().on('show.bs.toast', () => console.log(TAG, 'show'));
 
-    $(document).on('schedule:finished', (event, result) =>{
-        let msg = result.successful ? 'Plan vollständig generiert' : `Plan unvollständig, es fehlen <strong>${result.missing}</strong> Schichten`;
-        let severity = result.successful ? 'success': 'warning'
+    document.addEventListener('schedule:finished', e => {
+        let msg = e.detail.successful ? 'Plan vollständig generiert' : `Plan unvollständig, es fehlen <strong>${e.detail.missing}</strong> Schichten`;
+        let severity = e.detail.successful ? 'success': 'warning'
         show(msg, severity);
     })
 

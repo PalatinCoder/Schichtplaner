@@ -12,6 +12,7 @@ export var workers = [ new worker('Hans') ];
 export var shifts = [ new shift(new Date(), 1, 2) ];
 
 const storeChanged = () => new CustomEvent('store:changed', { detail: { shifts: shifts, workers: workers }})
+const scheduleFinished = result => new CustomEvent('schedule:finished', { detail: result })
 
 /**
  * Init callback
@@ -49,8 +50,8 @@ const reschedule = async () => {
 
     // TODO: as schedule:finished comes before store:changed, scheduleButton enables itself immediatley after recalculating
     schedule(shifts, workers)
-        .then(() => $(document).trigger('schedule:finished', { successful: true}))
-        .catch((r) => $(document).trigger('schedule:finished', { successful: false, missing: r}))
+        .then(() => document.dispatchEvent(scheduleFinished({ successful: true })))
+        .catch(r => document.dispatchEvent(scheduleFinished({ successful: false, missing: r })))
         .finally(() => document.dispatchEvent(storeChanged()))
 }
 
