@@ -11,6 +11,10 @@ const TAG = "[store]";
 export var workers = [ new worker('Hans') ];
 export var shifts = [ new shift(new Date(), 1, 2) ];
 
+const storeChanged = () => {
+    return new CustomEvent('store:changed', { detail: { shifts: shifts, workers: workers }})
+};
+
 /**
  * Init callback
  * Wire up all the event handlers
@@ -19,7 +23,7 @@ const init = () => {
     console.log(TAG, 'component loaded');
 
     // trigger change event to init the view after all modules are loaded
-    $(document).on('main:loaded', () => document.dispatchEvent(new Event('store:changed')))
+    $(document).on('main:loaded', () => document.dispatchEvent(storeChanged()))
 
     // fire stage 2 of a delete when the confirmation comes in
     $(document).on('delete:confirmed', stage2Delete);
@@ -49,7 +53,7 @@ const reschedule = async () => {
     schedule(shifts, workers)
         .then(() => $(document).trigger('schedule:finished', { successful: true}))
         .catch((r) => $(document).trigger('schedule:finished', { successful: false, missing: r}))
-        .finally(() => document.dispatchEvent(new Event('store:changed')))
+        .finally(() => document.dispatchEvent(storeChanged()))
 }
 
 /**
@@ -66,7 +70,7 @@ let pendingDeleteOperation;
 const stage2Delete = event => {
     console.log(TAG, 'processing delete operation');
     pendingDeleteOperation.call();
-    document.dispatchEvent(new Event('store:changed'))
+    document.dispatchEvent(storeChanged())
 }
 
 /**
@@ -85,7 +89,7 @@ const saveWorker = (event, data) => {
         workers[id].name = data.get('name');
     }
 
-    document.dispatchEvent(new Event('store:changed'))
+    document.dispatchEvent(storeChanged())
 }
 
 /**
@@ -115,7 +119,7 @@ const saveShift = (event, data) => {
         shifts[id] = s
     }
 
-    document.dispatchEvent(new Event('store:changed'))
+    document.dispatchEvent(storeChanged())
 }
 
 /**
