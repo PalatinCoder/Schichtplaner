@@ -2,7 +2,7 @@ import { shifts } from "./store.mjs";
 
 const TAG = "[calendar]";
 
-const dayOfWeek = s => (s.start.getDay()+6)%7;
+const byDay = s => (s.start.getDay()+6)%7;
 const newEmptyWeek = () => [ [],[],[],[],[],[],[] ]; // create a new array of seven arrays, for seven days in a week
 
 /**
@@ -16,7 +16,7 @@ export function component() {
         scale: 0,
         update: function() { 
             console.log(TAG, 'render');
-            this.shifts = shifts.groupBy(dayOfWeek, { initial: newEmptyWeek() });
+            this.shifts = shifts.group(byDay, { initial: newEmptyWeek() });
             this.hours = getHourBounds(shifts);
             this.scale = calculateScale(shifts);
         } 
