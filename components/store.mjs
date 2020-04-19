@@ -48,7 +48,6 @@ const reschedule = async () => {
     
     await sleep(500);
 
-    // TODO: as schedule:finished comes before store:changed, scheduleButton enables itself immediatley after recalculating
     schedule(shifts, workers)
         .then(() => document.dispatchEvent(scheduleFinished({ successful: true })))
         .catch(r => document.dispatchEvent(scheduleFinished({ successful: false, missing: r })))

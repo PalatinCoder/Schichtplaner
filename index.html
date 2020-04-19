@@ -46,7 +46,13 @@
                     <a href="#" class="dropdown-item">Stammdaten</a>
                 </div>
             </div>
-            <button id="scheduleButton" class="btn btn-primary my-2 my-sm-0" disabled data-toggle="tooltip" data-container="body" title="Keine Änderungen!">Neu generieren</button>
+            <div x-data="{ disabled: false }" data-toggle="tooltip" :data-original-title="disabled ? 'Keine aktuellen Änderungen': 'Plan neu berechnen'">
+                <button id="scheduleButton" class="btn btn-primary my-2 my-sm-0" :disabled="disabled"
+                    @click="$dispatch('schedule:request')" 
+                    @schedule:finished.document.debounce="disabled = true" 
+                    @store:changed.document="disabled = false">
+                    Neu generieren</button>
+            </div>
         </div>
     </nav>
 
@@ -348,7 +354,6 @@
         import shift from "./components/shift.mjs";
         import confirmDelete from "./components/confirm-delete.mjs";
         import spinner from "./components/spinner.mjs";
-        import scheduleButton from "./components/schedule-button.mjs";
         import * as Calendar from "./components/calendar.mjs";
         import { eventTrap } from "./lib/util.mjs"
 
@@ -369,7 +374,6 @@
                 worker,
                 shift,
                 spinner,
-                scheduleButton,
                 confirmDelete
             ].map(module => new Promise(resolve => { module.call(); resolve(); }));
 
