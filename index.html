@@ -59,16 +59,16 @@
     <main>
         <h2 class="d-none d-print-block px-4">Test</h2>
 
-        <section id="calendar" class="card mh-100" x-data="Calendar.component()" @store:changed.document="_shifts = [...$event.detail.shifts]">
+        <section id="calendar" class="card mh-100" x-data="Calendar.component()" x-init="currentWeek = weeks[0]" @store:changed.document="_shifts = [...$event.detail.shifts]">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4>Wochenansicht <span x-text="`KW ${currentWeek}`"></span></h4>
                 <nav class="d-print-none">
                     <ul class="pagination pagination-sm mb-0">
-                        <li :class="{ 'page-item': true, 'disabled': currentWeek == weeks[0] }"><a href="#" class="page-link" @click="currentWeek--"><i class="fas fa-chevron-left"></i></a></li>
-                        <template x-for="week in weeks" :key="week">
-                            <li :class="{ 'page-item': true, 'active': week == currentWeek }"><a href="#" class="page-link" x-text="week"></a></li>
+                        <li :class="{ 'page-item': true, 'disabled': currentWeek == weeks[0] }"><a href="#" class="page-link" @click.prevent="currentWeek--"><i class="fas fa-chevron-left"></i></a></li>
+                        <template x-for="(week, index) in weeks" :key="index">
+                            <li :class="{ 'page-item': true, 'active': week == currentWeek }"><a href="#" @click.prevent="currentWeek = week" class="page-link" x-text="week"></a></li>
                         </template>
-                        <li :class="{ 'page-item': true, 'disabled': currentWeek == weeks.slice(-1)[0] }"><a href="#" class="page-link" @click="currentWeek++"><i class="fas fa-chevron-right"></i></a></li>
+                        <li :class="{ 'page-item': true, 'disabled': currentWeek == weeks.slice(-1)[0] }"><a href="#" class="page-link" @click.prevent="currentWeek++"><i class="fas fa-chevron-right"></i></a></li>
                     </ul>
                 </nav>
             </div>

@@ -18,7 +18,7 @@ export function component() {
         get hours() { return getHourBounds(this.currentShifts) },
         get scale() { return calculateScale(this.currentShifts) },
         get weeks() { return Object.keys(shifts.group(s => s.start.getWeek())) },
-        currentWeek: 16,
+        currentWeek: 0,
     }
 }
 
