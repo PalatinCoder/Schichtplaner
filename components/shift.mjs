@@ -3,20 +3,15 @@ import { validateForm } from "../lib/util.mjs";
 
 const TAG = "[shift]";
 
-let $list, template, $workersModal, $formModal
+let $workersModal, $formModal
 
 /**
  * Initialize the component
  */
 const init = () => {
-    $list = $('#shifts table');
     $workersModal = $('#shiftWorkers');
     $formModal = $('#formShift');
-    template = $list.find('template').get(0);
 
-    $list.find('tbody').empty();
-
-    $(document).on('store:changed', renderTable);
     $workersModal.on('show.bs.modal', renderDetailModel);
     $formModal.on('show.bs.modal', renderFormModal);
     $formModal.find('select#shiftCopy').on('change', copyShift);
@@ -30,38 +25,9 @@ const init = () => {
             $(this).removeClass('was-validated');
         });
 
-    $list.on('click', 'button[data-action="delete"]', event => $(document).trigger('shift:requestDelete', $(event.currentTarget).data('id')));
-
     console.log(TAG, 'component loaded');
 }
 export default init
-
-/**
- * Render the table of all shifts
- * @param event (to be used as an event handler)
- */
-const renderTable = event => {
-    console.log(TAG, 'render table');
-
-    $list.find('tbody').empty()
-
-    shifts.forEach((shift, id) => {
-        let $row = $(document.importNode(template.content, true));
-
-        $row.find('[data-model="id"]').text(id);
-        $row.find('[data-model="start"]').text(shift.start.toLocaleString());
-        $row.find('[data-model="duration"]').text(shift.duration);
-        $row.find('[data-model="neededWorkers"]').text(shift.neededWorkers);
-        $row.find('[data-model="scheduledWorkers"]').text(shift.workers.length);
-        $row.find('[data-entity]').each((counter, element) => $(element).attr('data-entity', `Schicht ${shift}`));
-        $row.find('button[data-id]').each((counter, element) => $(element).attr('data-id', id));
-
-        if (shift.neededWorkers != shift.workers.length) $row.find('tr').addClass('table-warning');
-
-        $list.find('tbody').append($row);
-    });
-    
-}
 
 /**
  * Load the shift's workers into the modal

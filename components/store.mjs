@@ -31,7 +31,7 @@ const init = () => {
     $(document).on('worker:requestDelete', deleteWorker);
 
     $(document).on('shift:requestSave', saveShift);
-    $(document).on('shift:requestDelete', deleteShift);
+    document.addEventListener('shift:requestDelete', deleteShift);
 
     $(document).on('schedule:request', () => reschedule());
 
@@ -128,4 +128,4 @@ const saveShift = (event, data) => {
  * @param id id to be deleted
  * @returns function
  */
-const deleteShift = (event, id) => pendingDeleteOperation = () => shifts.splice(id, 1);
+const deleteShift = event => pendingDeleteOperation = () => shifts.splice(event.detail.id, 1);

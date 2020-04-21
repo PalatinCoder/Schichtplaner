@@ -23,7 +23,7 @@ const confirm = event => {
 
 const render = event => {
     let sender = $(event.relatedTarget);
-    let entity = sender.data('entity');
+    let entity = sender.attr('data-entity');
 
     if (!entity) throw new Error(`${TAG} no entity given`)
 

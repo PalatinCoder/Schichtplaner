@@ -107,7 +107,7 @@
             </div>
         </section>
 
-        <section id="shifts" class="card d-print-none">
+        <section id="shifts" class="card d-print-none" x-data="{ shifts: [] }" @store:changed.document="shifts = [...$event.detail.shifts]">
             <h4 class="card-header">Schichten</h4>
             <div class="card-body">
                 <table class="table table-responsive-md table-striped">
@@ -123,26 +123,25 @@
                             </th>
                         </tr>
                     </thead>
-                    <template>
-                        <tr>
-
-                            <th data-model="id" scope="row">i</th>
-                            <td data-model="start">1.1.1970, 00:00</td>
-                            <td data-model="duration">n</td>
-                            <td data-model="neededWorkers">n</td>
-                            <td data-model="scheduledWorkers">n</td>
-                            <td class="text-right">
-                                <div class="btn-group" data-toggle="tooltip" title="Eingeteilte Arbeiter">
-                                    <button class="btn btn-sm btn-outline-secondary" data-id="i" data-toggle="modal" data-target="#shiftWorkers"><i class="fas fa-users"></i></button>
-                                </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-outline-secondary" data-id="i" data-toggle="modal" data-target="#formShift"><i class="fas fa-pen"></i></button>
-                                    <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="i" data-entity="shift id" data-toggle="modal" data-target="#confirmDelete"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    </template>
                     <tbody>
+                        <template x-for="(shift, id) in shifts" :key="id">
+                            <tr>
+                                <th scope="row" x-text="id"></th>
+                                <td x-text="shift.start.toLocaleString()"></td>
+                                <td x-text="shift.duration"></td>
+                                <td x-text="shift.neededWorkers"></td>
+                                <td x-text="shift.workers.length"></td>
+                                <td class="text-right">
+                                    <div class="btn-group" data-toggle="tooltip" title="Eingeteilte Arbeiter">
+                                        <button class="btn btn-sm btn-outline-secondary" :data-id="id" data-toggle="modal" data-target="#shiftWorkers"><i class="fas fa-users"></i></button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-secondary" :data-id="id" data-toggle="modal" data-target="#formShift"><i class="fas fa-pen"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" :data-id="id" :data-entity="`Schicht ${shift.toString()}`" @click="$dispatch('shift:requestDelete', { id })" data-toggle="modal" data-target="#confirmDelete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
                     </tbody>
                 </table>
             </div>
