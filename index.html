@@ -80,15 +80,6 @@
                             <div class="col text-center border-bottom"><h6 x-text="day"></h6></div>
                         </template>
                     </div>
-                    <template id="calEvent">
-                            <div class="cal-event card border-dark rounded-0">
-                                <div class="card-body py-1">
-                                    <span class="card-title">xx:xx</span>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                </ul>
-                            </div>
-                    </template>
                     <div class="row cal-root">
                         <div class="col-1 cal-weekday" :style="`height: ${hours.length * scale}px;`">
                             <template x-for="(hour, index) in hours" :key="hour">
